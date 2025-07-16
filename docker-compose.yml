@@ -67,7 +67,7 @@ services:
     env_file:
       - ./client/.env
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/login || exit 1"]
+      test: ["CMD-SHELL", "wget --spider -q http://192.168.1.145:3000/login || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -110,7 +110,7 @@ services:
       ui:
         condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "nginx -t && curl -f http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "nginx -t && curl -f http://192.168.1.145/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
