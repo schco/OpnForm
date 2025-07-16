@@ -21,6 +21,8 @@ services:
       PHP_POST_MAX_SIZE: "64M"
     env_file:
       - ./api/.env
+    networks:
+     - opnform-net
     depends_on:
       db:
         condition: service_healthy
@@ -30,8 +32,8 @@ services:
       test: ["CMD-SHELL", "php /usr/share/nginx/html/artisan about || exit 1"]
       interval: 30s
       timeout: 15s
-      retries: 3
-      start_period: 60s
+      retries: 5
+      start_period: 90s
 
   api-worker:
     <<: *api-environment
@@ -66,12 +68,17 @@ services:
     container_name: opnform-client
     env_file:
       - ./client/.env
+    networks:
+      - opnform-net
+    depends_on:
+      api:
+       condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/login || exit 1"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', res => process.exit(res.statusCode === 200 ? 0 : 1}}"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 45s
+      retries: 5
+      start_period: 120s
 
   redis:
     image: redis:7
@@ -102,6 +109,8 @@ services:
       - ./docker/nginx.conf:/etc/nginx/conf.d/opnform.conf
     ports:
       - 8081:80
+    networks:
+     - opnform-net
     environment:
       - NGINX_MAX_BODY_SIZE=64m
     depends_on:
@@ -110,12 +119,14 @@ services:
       ui:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nginx -t && curl -f http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "nginx -t]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
-
+networks:
+  opnform-net:
+    driver: bridge
 volumes:
   postgres-data:
   opnform_storage:
