@@ -99,7 +99,7 @@ services:
     image: nginx:1
     container_name: opnform-ingress
     volumes:
-      - ./docker/nginx.conf:/etc/nginx/templates/default.conf.template
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - 8081:80
     environment:
